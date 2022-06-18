@@ -25,16 +25,23 @@ var userSchema = mongoose.Schema({
     state: String,
     city: String,
 });
-var user = mongoose.model("taskexp", userSchema);
-
+var user = mongoose.model("Ecommerce", userSchema);
 
 app.use(bodyParser.json());
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
+// Viewall Users
+app.get("/viewall", (req, res) => {
+    console.log("Get View all called");
+    user.find(function (err, result) {
+        res.json(result)
+    });
+})
+
+// Register New User
 app.post('/register', function (req, res) {
     console.log("Post register called ");
-
     var newUser = new user({
         name: req.body.name,
         email: req.body.email,
@@ -52,13 +59,7 @@ app.post('/register', function (req, res) {
     });
 });
 
-app.get("/viewall", (req, res) => {
-    console.log("Get View all called");
-    user.find(function (err, result) {
-        res.json(result)
-    });
-})
-
+// Login Existing User
 app.post('/login', function (req, res) {
     loginid = req.body.email;
     loginpass = req.body.password;
@@ -78,10 +79,6 @@ app.post('/login', function (req, res) {
                     res.send(response)
 
                 }
-                //  else {
-                //     res.send("Password is incorrect" + `<br>` + `<a href="/login">Try again</a>`);
-                //     console.log("password incorrect");
-                // }
             } else {
                 res.send("Email is incorrect" + `<br>` + `<a href="/login">try again</a>`);
                 console.log("email incorect called");
@@ -89,7 +86,7 @@ app.post('/login', function (req, res) {
         }
     });
 });
-
+// Edit User Data 
 app.post('/editprofile', function (req, res) {
     
     let useremail = req.body.email;
