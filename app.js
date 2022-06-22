@@ -18,12 +18,13 @@ app.use(allowCrossDomain);
 var mongoose = require('mongoose');
 mongoose.connect('mongodb+srv://monish:Monish1995@cluster0.ijjgg.mongodb.net/?retryWrites=true&w=majority');
 var userSchema = mongoose.Schema({
-    name: String,
+    // name: String,
     email: String,
     password: String,
-    number: Number,
-    state: String,
-    city: String,
+    token:String,
+    // number: Number,
+    // state: String,
+    // city: String,
 });
 var user = mongoose.model("Ecommerce", userSchema);
 app.use(bodyParser.json());
@@ -38,15 +39,29 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // })
 
 // Register New User
-app.post('/register', function (req, res) {
+app.post('/user/register', function (req, res) {
     console.log("Post register called ");
+
+    
+    
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    function generateString(length) {
+        let result = ' ';
+        const charactersLength = characters.length;
+        for (let i = 0; i < length; i++) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        return result;
+    }
+    // console.log(generateString(99));
+    // name: req.body.name,
+    // number: req.body.number,
+        // state: req.body.state,
+        // city: req.body.city,
     var newUser = new user({
-        name: req.body.name,
         email: req.body.email,
         password: req.body.password,
-        number: req.body.number,
-        state: req.body.state,
-        city: req.body.city,
+        token: generateString(99),
     });
     newUser.save(function (err, user) {
         if (err)
@@ -55,8 +70,8 @@ app.post('/register', function (req, res) {
             let dataOut = {
                 response_message: "Success",
                 response_data: {
-                    token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiYjc2ZjJiNTYtMmFiZS00MjE5LWI2NjktNDZmYzQ4MzM1OTI4Iiwicm9sZSI6IlNVUEVSX0FETUlOIiwiYWdlbnQiOiJQb3N0bWFuUnVudGltZS83LjI5LjAiLCJob3N0IjoiYXBpLnVwY3JlZC5haSIsImF1ZCI6ImFwaS51cGNyZWQuYWkiLCJleHAiOjE2NTYzOTA5NDh9.Gp4gpYQiHm0uBf4E2zpYsxEJwnswlbEfzJxvPk7WT1w",
-                    user_id: res._id,
+                    token: user.token,
+                    user_id: user._id,
                     email: req.body.email
                 },
                 meta: {}
@@ -64,13 +79,16 @@ app.post('/register', function (req, res) {
             res.send(dataOut);
         }
     });
+
+
+    
 });
 
 // Login Existing User
 app.post('/admin/login_admin', function (req, res) {
     loginid = req.body.email;
     loginpass = req.body.password;
-    console.log("post login all called" + "login-email=" + loginid + "  login-passw=" + loginpass);
+    console.log("post login called" + "login-email=" + loginid + "  login-passw=" + loginpass);
     user.findOne({ email: loginid }, function (err, response) {
         if (err) throw err;
         if (response !== null) {
@@ -78,7 +96,7 @@ app.post('/admin/login_admin', function (req, res) {
                 let dataOut = {
                     response_message: "Success",
                     response_data: {
-                        token: response._id,
+                        token: response.token,
                         user_id: response._id,
                         email: req.body.email
                     },
