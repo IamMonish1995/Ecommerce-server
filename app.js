@@ -41,44 +41,61 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Register New User
 app.post('/user/register', function (req, res) {
     console.log("Post register called ");
-
-    
-    
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    function generateString(length) {
-        let result = ' ';
-        const charactersLength = characters.length;
-        for (let i = 0; i < length; i++) {
-            result += characters.charAt(Math.floor(Math.random() * charactersLength));
-        }
-        return result;
-    }
-    // console.log(generateString(99));
-    // name: req.body.name,
-    // number: req.body.number,
-        // state: req.body.state,
-        // city: req.body.city,
-    var newUser = new user({
-        email: req.body.email,
-        password: req.body.password,
-        token: generateString(99),
-    });
-    newUser.save(function (err, user) {
-        if (err)
-            res.send("ERROR");
-        else {
-            let dataOut = {
-                response_message: "Success",
-                response_data: {
-                    token: user.token,
-                    user_id: user._id,
-                    email: req.body.email
-                },
-                meta: {}
+    loginid = req.body.email;
+    user.findOne({ email: loginid }, function (err, response) {
+        console.log("user exist check called" + "login-email=" + loginid);
+        if (err) throw err;
+        if (response !== null) { 
+            if (loginid == response.email) {
+                let dataOut = {
+                    response_message: "User Already Exist",
+                    response_data: {},
+                    meta: {},
+                    response_status:"409"
+                }
+                res.send(dataOut);
             }
-            res.send(dataOut);
+        } else {
+            console.log("New User Called");
+            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            function generateString(length) {
+                let result = '';
+                const charactersLength = characters.length;
+                for (let i = 0; i < length; i++) {
+                    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+                }
+                return result;
+            }
+            var newUser = new user({
+                // name: req.body.name,
+                // number: req.body.number,
+                // state: req.body.state,
+                // city: req.body.city,
+                email: req.body.email,
+                password: req.body.password,
+                token: generateString(99),
+            });
+            newUser.save(function (err, user) {
+                if (err)
+                    res.send(err);
+                else {
+                    let dataOut = {
+                        response_message: "Success",
+                        response_data: {
+                            token: user.token,
+                            user_id: user._id,
+                            email: req.body.email,
+                        },
+                        meta: {},
+                        response_status: "200",
+                    }
+                    res.send(dataOut);
+                }
+            });
         }
-    });
+    })
+    
+    
 
 
     
@@ -152,5 +169,5 @@ app.post('/admin/login_admin', function (req, res) {
 //     });
 
 // });
-
-app.listen(8080);
+const port = process.env.PORT || 8080
+app.listen(port,()=>console.log("Server Started on Port "+`${port}`));
