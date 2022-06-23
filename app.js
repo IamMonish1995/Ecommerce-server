@@ -1,4 +1,4 @@
-// Server Main_URL
+// Server Main_URL = https://git.heroku.com/floating-hollows-29680.git
 // updated file
 var express = require('express');
 var bodyParser = require('body-parser');
@@ -38,7 +38,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 //         res.json(result)
 //     });
 // })
-
+app.get('/', function (req, res) {
+    res.send("server running")
+})
 // Register New User
 app.post('/user/register', function (req, res) {
     console.log("Post register called ");
