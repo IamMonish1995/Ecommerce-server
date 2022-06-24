@@ -1,4 +1,4 @@
-// Server Main_URL = https://git.heroku.com/floating-hollows-29680.git
+// Server Main_URL = https://capstone-pro-server-ecom.herokuapp.com/
 // updated file
 var express = require('express');
 var bodyParser = require('body-parser');
